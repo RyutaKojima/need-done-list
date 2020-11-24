@@ -1,0 +1,41 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Home page matches snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="jsx-1978771298 container"
+  >
+    <main
+      class="jsx-1978771298"
+    >
+      <h1
+        class="jsx-1978771298 title"
+      >
+        Need Done List
+      </h1>
+      <p
+        class="jsx-1978771298 description"
+      >
+        希望のアイテムリストと完了済みを管理します
+      </p>
+      <a
+        href="/need"
+      >
+        使う
+      </a>
+    </main>
+    <footer
+      class="jsx-1978771298"
+    >
+      <a
+        class="jsx-1978771298"
+        href="https://github.com/RyutaKojima"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        Powered by RyutaKojima
+      </a>
+    </footer>
+  </div>
+</DocumentFragment>
+`;
