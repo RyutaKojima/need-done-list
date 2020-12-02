@@ -1,14 +1,14 @@
 import { suid } from 'rand-token'
 import Head from 'next/head'
 import Link from 'next/link'
-import { GetStaticProps, NextPage } from 'next'
+import { GetServerSideProps, NextPage } from 'next'
 import { EnumLayout, WithBaseProps } from '../types/types'
 
 type PageProps = WithBaseProps<{
   token: string
 }>
 
-export const getStaticProps: GetStaticProps<PageProps> = async () => {
+export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
   return {
     props: {
       title: 'Need list',
