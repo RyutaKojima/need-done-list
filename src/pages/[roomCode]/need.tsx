@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { GetServerSideProps, NextPage } from 'next'
 import { EnumLayout, WithBaseProps } from '../../types/types'
 import {
@@ -10,6 +10,8 @@ import {
   ListItem,
   ListItemText,
 } from '@material-ui/core'
+import firebase from 'firebase/app'
+import { firestore } from '../../library/firebase'
 
 type PageProps = WithBaseProps<{}>
 
@@ -24,6 +26,31 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
 
 const PageComponent: NextPage<PageProps> = () => {
   const router = useRouter()
+
+  const [users, setUsers] = useState<firebase.firestore.DocumentData[]>([])
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const res = await firestore.collection('users').get()
+
+      if (res.empty) {
+        return
+      }
+
+      const userList: firebase.firestore.DocumentData[] = []
+      res.forEach((doc) => {
+        userList.push(doc.data())
+      })
+
+      setUsers(userList)
+    }
+
+    if (users.length === 0) {
+      fetchUsers()
+    }
+  })
+
+  console.log(users)
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: string) => {
     router.push(newValue)
