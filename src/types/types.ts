@@ -11,3 +11,7 @@ export type BasePageProps = {
 }
 
 export type WithBaseProps<T> = T & BasePageProps
+
+export type RoomData = {
+  name: string | null
+}

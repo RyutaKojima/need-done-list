@@ -1,14 +1,14 @@
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import { GetServerSideProps, NextPage } from 'next'
-import { EnumLayout, WithBaseProps } from '../../types/types'
+import { EnumLayout, RoomData, WithBaseProps } from '../../types/types'
 import {
-  Toolbar,
-  Tabs,
-  Tab,
   List,
   ListItem,
   ListItemText,
+  Tab,
+  Tabs,
+  Toolbar,
 } from '@material-ui/core'
 import firebase from 'firebase/app'
 import { firestore } from '../../library/firebase'
@@ -27,37 +27,64 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
 const PageComponent: NextPage<PageProps> = () => {
   const router = useRouter()
 
-  const [users, setUsers] = useState<firebase.firestore.DocumentData[]>([])
+  const [initialized, setInitialized] = useState<boolean>(false)
+  const [room, setRoom] = useState<RoomData>({ name: null })
+  const [tickets, setTickets] = useState<firebase.firestore.DocumentData[]>([])
+
+  const roomCode: string =
+    typeof router.query.roomCode === 'string' ? router.query.roomCode : ''
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      const res = await firestore.collection('users').get()
+    if (!initialized) {
+      setInitialized(true)
 
-      if (res.empty) {
-        return
+      const fetchRoom = async () => {
+        const snapshot = await firestore.collection('Rooms').doc(roomCode).get()
+
+        if (!snapshot.exists) {
+          return
+        }
+
+        const room: RoomData = snapshot.data() as RoomData
+        if (!room) {
+          return
+        }
+
+        setRoom(room)
       }
 
-      const userList: firebase.firestore.DocumentData[] = []
-      res.forEach((doc) => {
-        userList.push(doc.data())
+      fetchRoom()
+
+      firestore.collection('Tickets').onSnapshot({
+        // complete: () => {
+        //   console.log('complete')
+        // },
+        // error: (error) => {
+        //   console.log('error')
+        //   console.log(error)
+        // },
+        next: (snapshot) => {
+          if (snapshot.empty) {
+            return
+          }
+
+          const newTickets: firebase.firestore.DocumentData[] = []
+          snapshot.forEach((doc) => {
+            newTickets.push(doc.data())
+          })
+
+          setTickets(newTickets)
+        },
       })
-
-      setUsers(userList)
-    }
-
-    if (users.length === 0) {
-      fetchUsers()
     }
   })
 
-  console.log(users)
+  console.log('room', room)
+  console.log('tickets', tickets)
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: string) => {
     router.push(newValue)
   }
-
-  const roomCode: string =
-    typeof router.query.roomCode === 'string' ? router.query.roomCode : ''
 
   return (
     <>
