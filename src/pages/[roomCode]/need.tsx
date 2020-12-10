@@ -56,13 +56,9 @@ const PageComponent: NextPage<PageProps> = () => {
       fetchRoom()
 
       firestore.collection('Tickets').onSnapshot({
-        // complete: () => {
-        //   console.log('complete')
-        // },
-        // error: (error) => {
-        //   console.log('error')
-        //   console.log(error)
-        // },
+        error: (error) => {
+          console.error('Firestore error: Tickets', error)
+        },
         next: (snapshot) => {
           if (snapshot.empty) {
             return
