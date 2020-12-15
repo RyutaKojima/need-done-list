@@ -12,6 +12,7 @@ import {
 } from '@material-ui/core'
 import firebase from 'firebase/app'
 import { firestore } from '../../library/firebase'
+import { useInitialize } from '../../hooks/useInitialize'
 
 type PageProps = WithBaseProps<{}>
 
@@ -27,52 +28,47 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
 const PageComponent: NextPage<PageProps> = () => {
   const router = useRouter()
 
-  const [initialized, setInitialized] = useState<boolean>(false)
   const [room, setRoom] = useState<RoomData>({ name: null })
   const [tickets, setTickets] = useState<firebase.firestore.DocumentData[]>([])
 
   const roomCode: string =
     typeof router.query.roomCode === 'string' ? router.query.roomCode : ''
 
-  useEffect(() => {
-    if (!initialized) {
-      setInitialized(true)
+  useInitialize(() => {
+    const fetchRoom = async () => {
+      const snapshot = await firestore.collection('Rooms').doc(roomCode).get()
 
-      const fetchRoom = async () => {
-        const snapshot = await firestore.collection('Rooms').doc(roomCode).get()
-
-        if (!snapshot.exists) {
-          return
-        }
-
-        const room: RoomData = snapshot.data() as RoomData
-        if (!room) {
-          return
-        }
-
-        setRoom(room)
+      if (!snapshot.exists) {
+        return
       }
 
-      fetchRoom()
+      const room: RoomData = snapshot.data()
+      if (!room) {
+        return
+      }
 
-      firestore.collection('Tickets').onSnapshot({
-        error: (error) => {
-          console.error('Firestore error: Tickets', error)
-        },
-        next: (snapshot) => {
-          if (snapshot.empty) {
-            return
-          }
-
-          const newTickets: firebase.firestore.DocumentData[] = []
-          snapshot.forEach((doc) => {
-            newTickets.push(doc.data())
-          })
-
-          setTickets(newTickets)
-        },
-      })
+      setRoom(room)
     }
+
+    fetchRoom()
+
+    return firestore.collection('Tickets').onSnapshot({
+      error: (error) => {
+        console.error('Firestore error: Tickets', error)
+      },
+      next: (snapshot) => {
+        if (snapshot.empty) {
+          return
+        }
+
+        const newTickets: firebase.firestore.DocumentData[] = []
+        snapshot.forEach((doc) => {
+          newTickets.push(doc.data())
+        })
+
+        setTickets(newTickets)
+      },
+    })
   })
 
   console.log('room', room)
