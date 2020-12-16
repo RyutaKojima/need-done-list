@@ -27,7 +27,9 @@ const PageComponent: NextPage<PageProps> = () => {
 
   const typimg = 'typo'
 
-  console.log(typimg)
+  const typo = 'colllection'
+
+  console.log(typimg, typo)
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: string) => {
     router.push(newValue)
