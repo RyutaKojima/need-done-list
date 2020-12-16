@@ -25,6 +25,10 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
 const PageComponent: NextPage<PageProps> = () => {
   const router = useRouter()
 
+  const typimg = 'typo'
+
+  console.log(typimg)
+
   const handleChange = (event: React.ChangeEvent<{}>, newValue: string) => {
     router.push(newValue)
   }
