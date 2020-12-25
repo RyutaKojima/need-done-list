@@ -1,7 +1,12 @@
 import { useRouter } from 'next/router'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { GetServerSideProps, NextPage } from 'next'
-import { EnumLayout, RoomData, WithBaseProps } from '../../types/types'
+import {
+  EnumLayout,
+  RoomData,
+  TicketData,
+  WithBaseProps,
+} from '../../types/types'
 import {
   List,
   ListItem,
@@ -28,7 +33,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
 const PageComponent: NextPage<PageProps> = () => {
   const router = useRouter()
 
-  const [room, setRoom] = useState<RoomData>({ name: null })
+  const [room, setRoom] = useState<RoomData | null>(null)
   const [tickets, setTickets] = useState<firebase.firestore.DocumentData[]>([])
 
   const roomCode: string =
@@ -42,9 +47,14 @@ const PageComponent: NextPage<PageProps> = () => {
         return
       }
 
-      const room: RoomData = snapshot.data()
-      if (!room) {
+      const docData = snapshot.data()
+      if (!docData) {
         return
+      }
+      const room: RoomData = {
+        name: docData.name,
+        password: docData.password,
+        createdAt: docData.createdAt,
       }
 
       setRoom(room)
@@ -52,26 +62,41 @@ const PageComponent: NextPage<PageProps> = () => {
 
     fetchRoom()
 
-    return firestore.collection('Tickets').onSnapshot({
-      error: (error) => {
-        console.error('Firestore error: Tickets', error)
-      },
-      next: (snapshot) => {
-        if (snapshot.empty) {
-          return
-        }
+    return firestore
+      .collection('Tickets')
+      .where('room', '==', roomCode)
+      .onSnapshot({
+        error: (error) => {
+          console.error('Firestore error: Tickets', error)
+        },
+        next: (snapshot) => {
+          if (snapshot.empty) {
+            return
+          }
 
-        const newTickets: firebase.firestore.DocumentData[] = []
-        snapshot.forEach((doc) => {
-          newTickets.push(doc.data())
-        })
+          const newTickets: TicketData[] = []
+          snapshot.forEach((doc) => {
+            const data = doc.data()
 
-        setTickets(newTickets)
-      },
-    })
+            newTickets.push({
+              id: doc.id,
+              roomId: data.roomId,
+              title: data.title,
+              description: data.description,
+              url: data.url,
+              doneAt: data.doneAt,
+            } as TicketData)
+          })
+
+          setTickets(newTickets)
+        },
+      })
   })
 
+  // TODO: 消す
+  // eslint-disable-next-line no-console
   console.log('room', room)
+  // eslint-disable-next-line no-console
   console.log('tickets', tickets)
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: string) => {
@@ -92,12 +117,11 @@ const PageComponent: NextPage<PageProps> = () => {
       </Toolbar>
 
       <List component="nav" aria-label="secondary mailbox folders">
-        <ListItem button>
-          <ListItemText primary="アイテム１" />
-        </ListItem>
-        <ListItem button>
-          <ListItemText primary="アイテム２" />
-        </ListItem>
+        {tickets.map((ticket) => (
+          <ListItem button key={`list-${ticket.id}`}>
+            <ListItemText primary={`${ticket.name}`} />
+          </ListItem>
+        ))}
       </List>
     </>
   )

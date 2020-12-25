@@ -4,7 +4,7 @@ entity "Rooms" {
     --
     name       : string
     password   : string
-    created_at : date
+    createdAt : date
 }
 
 entity "Users" {
@@ -16,11 +16,11 @@ entity "Users" {
 entity "Tickets" {
     * id : string <<generated>>
     --
-    room_id     : string <<FK>>
-    name        : string
+    roomId      : string <<FK>>
+    title       : string
     description : string
-    url         : string
-    doneDate    : date
+    url         : string | null
+    doneAt      : date | null
 }
 
 Rooms ..o{ Tickets

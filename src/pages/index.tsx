@@ -23,6 +23,8 @@ const Home: NextPage<PageProps> = () => {
   const handleClick = async () => {
     const initialRoom: RoomData = {
       name: '',
+      password: null,
+      createdAt: '',
     }
 
     const documentRef = await firestore.collection('Rooms').add(initialRoom)
