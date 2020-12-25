@@ -18,6 +18,7 @@ import {
 import firebase from 'firebase/app'
 import { firestore } from '../../library/firebase'
 import { useInitialize } from '../../hooks/useInitialize'
+import CreateTicketDialog from '../../components/tickets/CreateTicketDialog'
 
 type PageProps = WithBaseProps<{}>
 
@@ -64,7 +65,8 @@ const PageComponent: NextPage<PageProps> = () => {
 
     return firestore
       .collection('Tickets')
-      .where('room', '==', roomCode)
+      .where('roomId', '==', roomCode)
+      .where('doneAt', '==', null)
       .onSnapshot({
         error: (error) => {
           console.error('Firestore error: Tickets', error)
@@ -85,7 +87,7 @@ const PageComponent: NextPage<PageProps> = () => {
               description: data.description,
               url: data.url,
               doneAt: data.doneAt,
-            } as TicketData)
+            })
           })
 
           setTickets(newTickets)
@@ -101,6 +103,23 @@ const PageComponent: NextPage<PageProps> = () => {
 
   const handleChange = (event: React.ChangeEvent<{}>, newValue: string) => {
     router.push(newValue)
+  }
+
+  const handleAddTicket = (value: {
+    title: string
+    description: string
+    url: string
+  }) => {
+    const newTicket: TicketData = {
+      id: '',
+      roomId: roomCode,
+      title: value.title,
+      description: value.description,
+      url: value.url || null,
+      doneAt: null,
+    }
+
+    firestore.collection('Tickets').add(newTicket)
   }
 
   return (
@@ -119,10 +138,12 @@ const PageComponent: NextPage<PageProps> = () => {
       <List component="nav" aria-label="secondary mailbox folders">
         {tickets.map((ticket) => (
           <ListItem button key={`list-${ticket.id}`}>
-            <ListItemText primary={`${ticket.name}`} />
+            <ListItemText primary={`${ticket.title}`} />
           </ListItem>
         ))}
       </List>
+
+      <CreateTicketDialog onSubmit={handleAddTicket} />
     </>
   )
 }
