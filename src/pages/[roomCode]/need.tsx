@@ -8,13 +8,16 @@ import {
   WithBaseProps,
 } from '../../types/types'
 import {
+  IconButton,
   List,
   ListItem,
+  ListItemSecondaryAction,
   ListItemText,
   Tab,
   Tabs,
   Toolbar,
 } from '@material-ui/core'
+import { Delete } from '@material-ui/icons'
 import firebase from 'firebase/app'
 import { firestore } from '../../library/firebase'
 import { useInitialize } from '../../hooks/useInitialize'
@@ -139,6 +142,11 @@ const PageComponent: NextPage<PageProps> = () => {
         {tickets.map((ticket) => (
           <ListItem button key={`list-${ticket.id}`}>
             <ListItemText primary={`${ticket.title}`} />
+            <ListItemSecondaryAction>
+              <IconButton edge="end" aria-label="delete">
+                <Delete />
+              </IconButton>
+            </ListItemSecondaryAction>
           </ListItem>
         ))}
       </List>
