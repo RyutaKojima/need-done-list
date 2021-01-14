@@ -11,3 +11,18 @@ export type BasePageProps = {
 }
 
 export type WithBaseProps<T> = T & BasePageProps
+
+export type RoomData = {
+  name: string
+  password: string | null
+  createdAt: string
+}
+
+export type TicketData = {
+  id: string
+  roomId: string
+  title: string
+  description: string
+  url: string
+  doneAt: string | null
+}

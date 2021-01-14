@@ -1,25 +1,36 @@
-import { suid } from 'rand-token'
 import Head from 'next/head'
-import Link from 'next/link'
 import { GetServerSideProps, NextPage } from 'next'
-import { EnumLayout, WithBaseProps } from '../types/types'
+import { EnumLayout, RoomData, WithBaseProps } from '../types/types'
+import { Button } from '@material-ui/core'
+import React from 'react'
+import { useRouter } from 'next/router'
+import { firestore } from '../library/firebase'
 
-type PageProps = WithBaseProps<{
-  token: string
-}>
+type PageProps = WithBaseProps<{}>
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
   return {
     props: {
       title: 'Need list',
       layout: EnumLayout.default,
-      token: suid(12),
     },
   }
 }
 
-const Home: NextPage<PageProps> = (props) => {
-  const newRoomCode: string = props.token
+const Home: NextPage<PageProps> = () => {
+  const router = useRouter()
+
+  const handleClick = async () => {
+    const initialRoom: RoomData = {
+      name: '',
+      password: null,
+      createdAt: '',
+    }
+
+    const documentRef = await firestore.collection('Rooms').add(initialRoom)
+    const nextPath = `/${documentRef.id}/need`
+    router.push(nextPath)
+  }
 
   return (
     <div className="container">
@@ -33,7 +44,9 @@ const Home: NextPage<PageProps> = (props) => {
 
         <p className="description">予定リストと完了済みを管理します</p>
 
-        <Link href={`/${newRoomCode}/need`}>使う</Link>
+        <Button variant="contained" color="primary" onClick={handleClick}>
+          使う
+        </Button>
       </main>
 
       <footer>

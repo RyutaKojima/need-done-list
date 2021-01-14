@@ -1,0 +1,27 @@
+@startuml
+entity "Rooms" {
+    * id : string <<generated>>
+    --
+    name       : string
+    password   : string
+    createdAt : date
+}
+
+entity "Users" {
+    * id : string <<generated>>
+    --
+    name : string
+}
+
+entity "Tickets" {
+    * id : string <<generated>>
+    --
+    roomId      : string <<FK>>
+    title       : string
+    description : string
+    url         : string | null
+    doneAt      : date | null
+}
+
+Rooms ..o{ Tickets
+@enduml
