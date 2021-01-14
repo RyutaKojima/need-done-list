@@ -6,18 +6,26 @@ import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
+import { IconButton } from '@material-ui/core'
+import { Edit } from '@material-ui/icons'
+import { TicketData } from '../../types/types'
 
 type Props = {
-  onSubmit: (value: { title: string; description: string; url: string }) => void
+  ticket: TicketData
+  onSubmit: (value: TicketData) => void
 }
 
-export default function CreateTicketDialog(props: Props) {
+export default function EditTicketDialog(props: Props) {
   const [open, setOpen] = React.useState(false)
   const [title, setTitle] = React.useState('')
   const [description, setDescription] = React.useState('')
   const [url, setUrl] = React.useState('')
 
   const handleClickOpen = () => {
+    setTitle(props.ticket.title)
+    setDescription(props.ticket.description)
+    setUrl(props.ticket.url)
+
     setOpen(true)
   }
 
@@ -27,9 +35,12 @@ export default function CreateTicketDialog(props: Props) {
 
   const handleSubmit = () => {
     props.onSubmit({
+      id: props.ticket.id,
+      roomId: props.ticket.roomId,
       title,
       description,
       url,
+      doneAt: props.ticket.doneAt,
     })
 
     handleClose()
@@ -37,9 +48,9 @@ export default function CreateTicketDialog(props: Props) {
 
   return (
     <div>
-      <Button variant="outlined" color="primary" onClick={handleClickOpen}>
-        + 追加
-      </Button>
+      <IconButton edge="end" aria-label="edit" onClick={handleClickOpen}>
+        <Edit />
+      </IconButton>
       <Dialog
         open={open}
         onClose={handleClose}
@@ -94,7 +105,7 @@ export default function CreateTicketDialog(props: Props) {
             キャンセル
           </Button>
           <Button onClick={handleSubmit} color="primary">
-            作成
+            保存
           </Button>
         </DialogActions>
       </Dialog>

@@ -8,7 +8,6 @@ import {
   WithBaseProps,
 } from '../../types/types'
 import {
-  IconButton,
   List,
   ListItem,
   ListItemSecondaryAction,
@@ -17,14 +16,14 @@ import {
   Tabs,
   Toolbar,
 } from '@material-ui/core'
-import { Delete } from '@material-ui/icons'
-import firebase from 'firebase/app'
 import { firestore } from '../../library/firebase'
 import { useInitialize } from '../../hooks/useInitialize'
 import CreateTicketDialog from '../../components/tickets/CreateTicketDialog'
+import EditTicketDialog from '../../components/tickets/EditTicketDialog'
 
 type PageProps = WithBaseProps<{}>
 
+// noinspection JSUnusedGlobalSymbols
 export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
   return {
     props: {
@@ -38,7 +37,7 @@ const PageComponent: NextPage<PageProps> = () => {
   const router = useRouter()
 
   const [room, setRoom] = useState<RoomData | null>(null)
-  const [tickets, setTickets] = useState<firebase.firestore.DocumentData[]>([])
+  const [tickets, setTickets] = useState<TicketData[]>([])
 
   const roomCode: string =
     typeof router.query.roomCode === 'string' ? router.query.roomCode : ''
@@ -118,11 +117,15 @@ const PageComponent: NextPage<PageProps> = () => {
       roomId: roomCode,
       title: value.title,
       description: value.description,
-      url: value.url || null,
+      url: value.url,
       doneAt: null,
     }
 
     firestore.collection('Tickets').add(newTicket)
+  }
+
+  const handleEditTicket = (newTicket: TicketData) => {
+    firestore.collection('Tickets').doc(newTicket.id).update(newTicket)
   }
 
   return (
@@ -143,9 +146,7 @@ const PageComponent: NextPage<PageProps> = () => {
           <ListItem button key={`list-${ticket.id}`}>
             <ListItemText primary={`${ticket.title}`} />
             <ListItemSecondaryAction>
-              <IconButton edge="end" aria-label="delete">
-                <Delete />
-              </IconButton>
+              <EditTicketDialog ticket={ticket} onSubmit={handleEditTicket} />
             </ListItemSecondaryAction>
           </ListItem>
         ))}

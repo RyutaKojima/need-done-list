@@ -23,6 +23,6 @@ export type TicketData = {
   roomId: string
   title: string
   description: string
-  url: string | null
+  url: string
   doneAt: string | null
 }
