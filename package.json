@@ -35,7 +35,7 @@
     "react-dom": "16.14.0"
   },
   "devDependencies": {
-    "@testing-library/react": "10.4.9",
+    "@testing-library/react": "11.2.5",
     "@types/firebase": "3.2.1",
     "@types/jest": "25.2.3",
     "@types/node": "13.13.45",
