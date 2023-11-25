@@ -39,7 +39,7 @@
     "@types/firebase": "3.2.1",
     "@types/jest": "29.5.10",
     "@types/node": "16.11.64",
-    "@types/react": "17.0.70",
+    "@types/react": "17.0.71",
     "@typescript-eslint/eslint-plugin": "6.11.0",
     "@typescript-eslint/parser": "6.11.0",
     "babel-jest": "29.7.0",
