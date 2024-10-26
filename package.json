@@ -37,7 +37,7 @@
   "devDependencies": {
     "@testing-library/react": "14.3.1",
     "@types/firebase": "3.2.3",
-    "@types/jest": "29.5.12",
+    "@types/jest": "29.5.14",
     "@types/node": "16.11.64",
     "@types/react": "17.0.80",
     "@typescript-eslint/eslint-plugin": "7.2.0",
